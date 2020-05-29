@@ -14,9 +14,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import id.ac.unhas.todo_list.MainActivity.Companion.isSortByDateCreated
 import id.ac.unhas.todo_list.todo.TodoList
 import id.ac.unhas.todo_list.todo.TodoListAdapter
+import id.ac.unhas.todo_list.util.AlarmReceiver
 import id.ac.unhas.todo_list.todo.TodoListViewModel
 import id.ac.unhas.todo_list.util.Common
 import id.ac.unhas.todo_list.util.FormDialog
@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var todoViewModel: TodoListViewModel
     private lateinit var todoAdapter: TodoListAdapter
+    private lateinit var alarmReceiver: AlarmReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener {
             showInsertDialog()
         }
+        alarmReceiver = AlarmReceiver()
     }
 
     override fun onResume() {
@@ -149,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                 todoViewModel.insertTodo(todo)
 
                 if (remindMe) {
+                    alarmReceiver.setReminderAlarm(this, dueDate, time, "$title is due in 1 hour")
                 }
                 Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
             }
@@ -226,6 +229,7 @@ class MainActivity : AppCompatActivity() {
                 todoViewModel.updateTodo(todo)
 
                 if (remindMe && prevDueTime != time) {
+                    alarmReceiver.setReminderAlarm(this, dueDate, time, "$title is due in 1 hour")
                 }
 
                 Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
@@ -256,8 +260,8 @@ class MainActivity : AppCompatActivity() {
             }.create().show()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {menuInflater.inflate(R.menu.main_menu, menu)
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView = (menu.findItem(R.id.menu_search_toolbar)).actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
