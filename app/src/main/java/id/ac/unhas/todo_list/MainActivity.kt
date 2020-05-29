@@ -1,8 +1,6 @@
 package id.ac.unhas.todo_list
 
 import android.app.AlertDialog
-import android.app.SearchManager
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,10 +8,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import id.ac.unhas.todo_list.MainActivity.Companion.isSortByDateCreated
 import id.ac.unhas.todo_list.todo.TodoList
 import id.ac.unhas.todo_list.todo.TodoListAdapter
 import id.ac.unhas.todo_list.todo.TodoListViewModel
@@ -255,8 +253,34 @@ class MainActivity : AppCompatActivity() {
             }.create().show()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_sort -> true
+            R.id.action_sort_date_created -> {
+                isSortByDateCreated = true
+                refreshData()
+                true
+            }
+            R.id.action_sort_due_date -> {
+                isSortByDateCreated = false
+                refreshData()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun setProgressbarVisibility(state: Boolean) {
         if (state) progressbar.visibility = View.VISIBLE
         else progressbar.visibility = View.INVISIBLE
     }
 }
+
