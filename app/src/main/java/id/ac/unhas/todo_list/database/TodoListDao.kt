@@ -6,15 +6,15 @@ import id.ac.unhas.todo_list.todo.TodoList
 
 @Dao
 interface TodoListDao {
-    @Query("SELECT * from todoList ")
-    fun getTodoList(): LiveData<List<TodoList>>
+    @Query("SELECT * FROM todo_table")
+    fun getTodos(): LiveData<List<TodoList>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTodoList(todoList: TodoList)
-
-    @Delete
-    suspend fun deleteTodoList(todoList: TodoList)
+    suspend fun insertTodo(todo: TodoList)
 
     @Update
-    suspend fun updateTodoList(todoList: TodoList)
+    suspend fun updateTodo(todo: TodoList)
+
+    @Delete
+    suspend fun deleteTodo(todo: TodoList)
 }

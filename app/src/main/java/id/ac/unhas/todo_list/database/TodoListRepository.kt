@@ -7,38 +7,40 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class TodoListRepository(application: Application) {
+//Penyimpanan
+class TodoListRepository(application: Application){
+    private val todoDao: TodoListDao?
+    private var todos: LiveData<List<TodoList>>? = null
 
-    private val todolistDao: TodoListDao?
-    private var todoLists: LiveData<List<TodoList>>? = null
-
-    init {
-        val db = TodoListDatabase.getInstance(application.applicationContext)
-        todolistDao = db?.todoListDao()
-        todoLists = todolistDao?.getTodoList()
+    init{
+        val db =
+            AppDatabase.getInstance(
+                application.applicationContext
+            )
+        todoDao = db?.todoDao()
+        todos = todoDao?.getTodos()
     }
 
-    fun getTodoLists(): LiveData<List<TodoList>>?{
-        return todoLists
+    fun getTodos(): LiveData<List<TodoList>>?{
+        return todos
     }
 
-    fun insert(todoList: TodoList) = runBlocking {
-        this.launch(Dispatchers.IO) {
-            todolistDao?.insertTodoList(todoList)
-        }
-    }
-
-    fun delete(todoList: TodoList){
-        runBlocking {
-            this.launch(Dispatchers.IO){
-                todolistDao?.deleteTodoList(todoList)
-            }
-        }
-    }
-
-    fun update(todoList: TodoList) = runBlocking {
+    fun insert(todo: TodoList) = runBlocking {
         this.launch(Dispatchers.IO){
-            todolistDao?.updateTodoList(todoList)
+            todoDao?.insertTodo(todo)
         }
     }
+
+    fun update(todo: TodoList) = runBlocking {
+        this.launch(Dispatchers.IO){
+            todoDao?.updateTodo(todo)
+        }
+    }
+
+    fun delete(todo: TodoList) = runBlocking {
+        this.launch(Dispatchers.IO){
+            todoDao?.deleteTodo(todo)
+        }
+    }
+
 }
